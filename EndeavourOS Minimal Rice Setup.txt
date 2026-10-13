@@ -1,0 +1,260 @@
+# EndeavourOS Minimal Rice Setup: Hyprland + Quickshell
+
+Let's start from your clean EndeavourOS installation and build the desktop in a controlled order. The goal is a minimal, modern, animated desktop without Waybar, using Quickshell for the bar and widgets.
+
+We'll use `pacman` for official Arch packages and the AUR only where necessary. You don't need to install a desktop environment or a display manager to get started.
+
+## 1. Your installation checklist
+
+## Progress
+
+0 of 12 checked
+
+Core desktop
+
+Hyprland
+
+Kitty terminal
+
+Rofi launcher
+
+Thunar file manager
+
+Desktop integration
+
+XDG Desktop Portal
+
+Hyprland portal
+
+GTK portal
+
+Ricing
+
+Quickshell
+
+awww wallpaper daemon
+
+JetBrains Mono Nerd Font
+
+Applications
+
+Brave Browser
+
+VSCodium
+
+## 2. Update EndeavourOS first
+
+Open your TTY and update the system before installing anything.
+
+```
+sudo pacman -Syu
+```
+
+If it asks to confirm the installation, review the package list and press `Y`, then Enter.
+
+Important: On Arch-based systems, avoid partial upgrades. Use `sudo pacman -Syu` rather than running `pacman -Sy` and installing packages separately.
+
+## 3. Install the core desktop packages
+
+Install Hyprland, Kitty, Thunar, Quickshell, the portals and the font from the official repositories.
+
+```
+sudo pacman -S \
+  hyprland \
+  kitty \
+  thunar \
+  quickshell \
+  xdg-desktop-portal \
+  xdg-desktop-portal-hyprland \
+  xdg-desktop-portal-gtk \
+  ttf-jetbrains-mono-nerd
+```
+
+These are available through Arch's official repositories, including the current Hyprland and Quickshell packages.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://archlinux.org\&sz=32)
+
+hyprland 0.56.2-2 (x86_64)
+
++2
+
+
+
+For screenshot and screen-sharing functionality, also install:
+
+```
+sudo pacman -S pipewire wireplumber grim slurp wl-clipboard
+```
+
+- `pipewire` and `wireplumber` provide audio and media session infrastructure.
+- `grim` and `slurp` are useful for screenshots and selecting screen regions.
+- `wl-clipboard` provides Wayland clipboard commands.
+
+You don't need to enable a display manager yet. We'll start Hyprland manually after configuring it.
+
+## 4. Install Rofi
+
+First, check which Rofi packages are available:
+
+```
+pacman -Ss rofi
+```
+
+The traditional `rofi` package is primarily associated with X11. For a Wayland-first setup, use a compatible Wayland build such as `rofi-wayland` if it is available in your enabled repositories or AUR.
+
+If you're happy to use the traditional version initially, install:
+
+```
+sudo pacman -S rofi
+```
+
+We can verify its Wayland compatibility when we configure the launcher.
+
+## 5. Install an AUR helper
+
+Brave and VSCodium can be installed through AUR packages. The AUR is community-maintained, so review package build files before accepting them.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://wiki.archlinux.org\&sz=32)
+
+ArchWiki
+
++1
+
+
+
+Install the build tools:
+
+```
+sudo pacman -S --needed base-devel git
+```
+
+Install `yay` if it isn't already available:
+
+```
+command -v yay
+```
+
+If that prints nothing, build it from the official AUR repository:
+
+```
+git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si
+cd ..
+```
+
+Don't run `makepkg` as root.
+
+## 6. Install Brave and VSCodium
+
+Install the prebuilt binary packages:
+
+```
+yay -S brave-bin vscodium-bin
+```
+
+These avoid compiling the entire browser or editor from source. The package recipes are maintained in the AUR.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://aur.archlinux.org\&sz=32)
+
+brave-bin
+
++1
+
+
+
+When prompted to review the build files, take a moment to inspect them before proceeding.
+
+## 7. Install awww
+
+First check whether your enabled repositories already provide it:
+
+```
+pacman -Ss awww
+```
+
+If it is not available through `pacman`, search the AUR:
+
+```
+yay -Ss awww
+```
+
+Choose the package matching the animated wallpaper project you intend to use. Then install its exact package name, for example:
+
+```
+yay -S awww-git
+```
+
+If `awww-git` is not listed, don't run that command blindly. Check the search results first. We can configure the wallpaper daemon after Hyprland is running.
+
+## 8. Create your configuration directories
+
+Once installation is complete, prepare the directories:
+
+```
+mkdir -p ~/.config/hypr/config
+mkdir -p ~/.config/hypr/scripts
+mkdir -p ~/.config/hypr/themes
+mkdir -p ~/.config/kitty
+mkdir -p ~/.config/rofi
+mkdir -p ~/.config/quickshell
+mkdir -p ~/Pictures/Wallpapers
+```
+
+We'll use Hyprland's Lua configuration file as the entry point, with separate Lua modules for input, appearance, animations, keybindings, monitors and autostart. Since Hyprland 0.55, Lua is the current configuration approach.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://wiki.hypr.land\&sz=32)
+
+Hyprland Wiki
+
++1
+
+
+
+## 9. Verify the installations
+
+Run:
+
+```
+pacman -Q hyprland kitty thunar quickshell
+```
+
+Then:
+
+```
+pacman -Q xdg-desktop-portal \
+  xdg-desktop-portal-hyprland \
+  xdg-desktop-portal-gtk \
+  ttf-jetbrains-mono-nerd
+```
+
+And check the applications:
+
+```
+command -v brave
+command -v codium
+command -v kitty
+command -v quickshell
+```
+
+If a command is missing, it doesn't necessarily mean the package failed to install. Executable names sometimes differ from package names.
+
+## 10. Start Hyprland
+
+Before launching it, check whether the Lua configuration already exists:
+
+```
+ls -la ~/.config/hypr/
+```
+
+If `hyprland.lua` already exists, back it up rather than overwriting it. If no configuration exists, Hyprland can generate an example configuration when first launched.
+
+Then start the session from your TTY:
+
+```
+Hyprland
+```
+
+Don't worry if the first session looks plain. We'll configure the keybindings and terminal first, then add wallpaper support and finally Quickshell.
+
+One final recommendation: don't install Waybar, another bar, or a full dotfiles bundle. We'll keep Quickshell as the only custom shell interface, so the setup stays consistent with your goal.

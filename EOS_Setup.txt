@@ -1,0 +1,45 @@
+Guide for minimal EndeavourOS setup no desktop
+Device: Asus TUF FX505GD - Intel i7-8750H and GTX1050Ti
+
+# Installing applications
+sudo pacman -S \
+  hyprland \
+  kitty \
+  thunar \
+  quickshell \
+  xdg-desktop-portal \
+  xdg-desktop-portal-hyprland \
+  xdg-desktop-portal-gtk \
+  ttf-jetbrains-mono-nerd \
+  btop \ 
+  rofi
+
+yay -S brave-bin vscodium-bin awww
+
+# Initialise user directories
+xdg-user-dirs-update
+
+# Install legacy Nvidia Driver
+## Remove the open-source driver
+sudo pacman -Rns vulkan-nouveau 
+
+yay -S nvidia-580xx-dkms nvidia-580xx-utils nvidia-580xx-settings lib32-nvidia-580xx-utils
+
+lspci -k | grep -A 2 -i vga         # Check for the usage of dGPU (should be nvidia)
+
+# if the nouveau stuck at there and nvidia-smi not working use this
+sudo bash -c 'echo -e "blacklist nouveau\noptions nouveau modeset=0" > /etc/modprqobe.d/blacklist-nouveau.conf' 
+sudo dracut-rebuild
+sudo reboot
+nvidia-smi
+
+# If kernel update, and driver break
+sudo dkms autoinstall
+sudo dracut-rebuild
+
+# Wallpapers 
+awww-daemon & diown
+awww img Pictures/Wallpapers/image.jpg
+
+# Kitty Terminal Customisation
+kitten themes
